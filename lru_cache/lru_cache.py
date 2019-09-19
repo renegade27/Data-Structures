@@ -1,3 +1,5 @@
+from doubly_linked_list import DoublyLinkedList, ListNode
+
 class LRUCache:
   """
   Our LRUCache class keeps track of the max number of nodes it
@@ -7,6 +9,10 @@ class LRUCache:
   to every node stored in the cache.
   """
   def __init__(self, limit=10):
+    self.current = 0
+    self.limit = limit
+    self.storage = DoublyLinkedList()
+    self.dict = {}
     pass
 
   """
@@ -17,7 +23,14 @@ class LRUCache:
   key-value pair doesn't exist in the cache. 
   """
   def get(self, key):
-    pass
+    current = self.storage.head
+    while current:
+      if current.value == key:
+        self.storage.move_to_front(current)
+        return self.dict[key]
+      current = current.next
+    return None
+
 
   """
   Adds the given key-value pair to the cache. The newly-
@@ -30,4 +43,42 @@ class LRUCache:
   the newly-specified value. 
   """
   def set(self, key, value):
-    pass
+    if key in self.dict.keys():
+      self.dict.update({key: value})
+      self.get(key)
+      return
+    
+    if self.storage.__len__() == self.limit:
+      oldKey = self.storage.remove_from_tail()
+      self.storage.add_to_head(key)
+      self.dict[key] = value
+      self.dict.pop(oldKey)
+      return
+    
+    self.storage.add_to_head(key)
+    self.dict[key] = value
+    return
+
+    # First try, fail
+    # if self.storage.__len__() == self.limit:
+    #   if key in self.dict:
+    #     self.dict.update({ key: value})
+    #     self.storage.remove_from_tail()
+    #     self.storage.add_to_head(ListNode(key))
+    #     return
+    #   oldKey = self.storage.remove_from_tail()
+    #   self.storage.add_to_head(ListNode(key))
+    #   for keys in self.dict.keys():
+    #     if keys == oldKey:
+    #       self.dict[key] = self.dict.pop(oldKey)
+    #       return
+    # else:
+    #   if key in self.dict:
+    #     self.dict.update({ key: value})
+    #     self.storage.delete(ListNode(key))
+    #     self.storage.add_to_head(ListNode(key))
+    #   self.storage.add_to_head(ListNode(key))
+    #   self.dict[key] = value
+
+
+
